@@ -7,6 +7,7 @@
 #include "KittyMemory.h"
 
 using KittyMemory::Memory_Status;
+using KittyMemory::ProcMap;
 
 
 bool KittyMemory::ProtectAddr(void *addr, size_t length, int protection) {
@@ -80,7 +81,7 @@ uintptr_t KittyMemory::getLibraryMap(const char *libraryName) {
     ProcMap retMap;
     char mapFile[256] = {0}, line[512] = {0};
 
-    FILE *fp = fopen("/proc/self/maps, "rt");
+    FILE *fp = fopen("/proc/self/maps", "rt");
     if (fp != NULL) {
         while (fgets(line, sizeof(line), fp)) {
             if (strstr(line, libraryName)) {
