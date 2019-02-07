@@ -36,6 +36,20 @@ namespace KittyMemory {
         INV_BUF = 4,
         INV_PROT = 5
     } Memory_Status;
+	
+	
+	struct ProcMap {
+    void *startAddr;
+    void *endAddr;
+    size_t length;
+    std::string perms;
+    long offset;
+    std::string dev;
+    int inode;
+    std::string pathname;
+
+    bool isValid() { return (startAddr != NULL && endAddr != NULL && !pathname.empty()); }
+};
 
     /*
    * Changes protection of an address with given length
@@ -82,15 +96,15 @@ namespace KittyMemory {
     }
 
     /*
-     * Gets address of a mapped library in self process
+     * Gets info of a mapped library in self process
      */
-    uintptr_t getLibraryBase(const char *libName);
+    ProcMap getLibraryMap(const char *libraryName);
 
     /*
     * Expects a relative address in a library
     * Returns final absolute address
     */
-    uintptr_t getAbsoluteAddress(const char *libName, uintptr_t relativeAddr);
+    uintptr_t getAbsoluteAddress(const char *libraryName, uintptr_t relativeAddr);
 };
 
 #endif /* KittyMemory_h */
