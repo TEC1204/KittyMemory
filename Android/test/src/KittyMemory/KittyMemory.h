@@ -39,17 +39,17 @@ namespace KittyMemory {
 	
 	
 	struct ProcMap {
-    void *startAddr;
-    void *endAddr;
-    size_t length;
-    std::string perms;
-    long offset;
-    std::string dev;
-    int inode;
-    std::string pathname;
+		void *startAddr;
+        void *endAddr;
+        size_t length;
+        std::string perms;
+        long offset;
+        std::string dev;
+        int inode;
+        std::string pathname;
 
-    bool isValid() { return (startAddr != NULL && endAddr != NULL && !pathname.empty()); }
-};
+        bool isValid() { return (startAddr != NULL && endAddr != NULL && !pathname.empty()); }
+	};
 
     /*
    * Changes protection of an address with given length

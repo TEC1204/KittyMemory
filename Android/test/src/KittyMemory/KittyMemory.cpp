@@ -77,9 +77,9 @@ std::string KittyMemory::read2HexStr(const void *addr, size_t len) {
     return ret;
 }
 
-uintptr_t KittyMemory::getLibraryMap(const char *libraryName) {
+ProcMap KittyMemory::getLibraryMap(const char *libraryName) {
     ProcMap retMap;
-    char mapFile[256] = {0}, line[512] = {0};
+    char line[512] = {0};
 
     FILE *fp = fopen("/proc/self/maps", "rt");
     if (fp != NULL) {
