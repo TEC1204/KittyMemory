@@ -19,7 +19,7 @@ bool KittyMemory::ProtectAddr(void *addr, size_t length, int protection) {
 }
 
 
-Memory_Status KittyMemory::Write(void *addr, const void *buffer, size_t len) {
+Memory_Status KittyMemory::memWrite(void *addr, const void *buffer, size_t len) {
     if (addr == NULL)
         return INV_ADDR;
 
@@ -39,7 +39,7 @@ Memory_Status KittyMemory::Write(void *addr, const void *buffer, size_t len) {
 }
 
 
-Memory_Status KittyMemory::Read(void *buffer, const void *addr, size_t len) {
+Memory_Status KittyMemory::memRead(void *buffer, const void *addr, size_t len) {
     if (addr == NULL)
         return INV_ADDR;
 
@@ -66,7 +66,7 @@ std::string KittyMemory::read2HexStr(const void *addr, size_t len) {
 
     std::string ret = "0x";
 
-    if (Read(temp, addr, len) != SUCCESS)
+    if (memRead(temp, addr, len) != SUCCESS)
         return ret;
 
     for (int i = 0; i < len; i++) {

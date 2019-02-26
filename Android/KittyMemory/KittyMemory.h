@@ -11,8 +11,7 @@
 #include <string>
 #include <unistd.h>
 #include <sys/mman.h>
-
-#include "Logger.h"
+#include <vector>
 
 
 #define _SYS_PAGE_SIZE_ (sysconf(_SC_PAGE_SIZE))
@@ -36,10 +35,10 @@ namespace KittyMemory {
         INV_BUF = 4,
         INV_PROT = 5
     } Memory_Status;
-	
-	
-	struct ProcMap {
-		void *startAddr;
+
+
+    struct ProcMap {
+        void *startAddr;
         void *endAddr;
         size_t length;
         std::string perms;
@@ -49,7 +48,7 @@ namespace KittyMemory {
         std::string pathname;
 
         bool isValid() { return (startAddr != NULL && endAddr != NULL && !pathname.empty()); }
-	};
+    };
 
     /*
    * Changes protection of an address with given length
@@ -59,12 +58,12 @@ namespace KittyMemory {
     /*
     * Writes buffer content to an address
    */
-    Memory_Status Write(void *addr, const void *buffer, size_t len);
+    Memory_Status memWrite(void *addr, const void *buffer, size_t len);
 
     /*
    * Reads an address content into a buffer
    */
-    Memory_Status Read(void *buffer, const void *addr, size_t len);
+    Memory_Status memRead(void *buffer, const void *addr, size_t len);
 
     /*
      * Reads an address content and returns hex string
@@ -77,11 +76,17 @@ namespace KittyMemory {
      * Make sure to use the correct data type!
      */
     template<typename Type>
-    Type readPointer(void *ptr) {
-        Type defaultVal = {0};
-        if (ptr == nullptr)
+    Type readPtr(void *ptr, std::vector<int> offsets) {
+        Type defaultVal = {};
+        if (ptr == NULL)
             return defaultVal;
-        return *(Type *) ptr;
+        void *finalPtr = ptr;
+        for (int i = 0; finalPtr != NULL && i < offsets.size(); i++) {
+            finalPtr = reinterpret_cast<void **>(reinterpret_cast<uintptr_t>(finalPtr) + offsets[i]);
+        }
+        if (finalPtr == NULL)
+            return defaultVal;
+        return *reinterpret_cast<Type *>(finalPtr);
     }
 
 
@@ -90,11 +95,18 @@ namespace KittyMemory {
      * Make sure to use the correct data type!
      */
     template<typename Type>
-    void writePointer(void *ptr, Type val) {
-        if (ptr != nullptr)
-            *(Type *) ptr = val;
+    void writePtr(void *ptr, std::vector<int> offsets, Type val) {
+        if (ptr == NULL)
+            return;
+        void *finalPtr = ptr;
+        for (int i = 0; finalPtr != NULL && i < offsets.size(); i++) {
+            finalPtr = reinterpret_cast<void **>(reinterpret_cast<uintptr_t>(finalPtr) + offsets[i]);
+        }
+        if (finalPtr) {
+            *reinterpret_cast<Type *>(finalPtr) = val;
+            finalPtr = NULL;
+        }
     }
-
     /*
      * Gets info of a mapped library in self process
      */

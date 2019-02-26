@@ -1,6 +1,6 @@
 #include <pthread.h>
 #include "KittyMemory/MemoryPatch.h"
-
+#include "KittyMemory/Logger.h"
 
 // fancy struct for patches
  struct My_Patches {
