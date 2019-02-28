@@ -75,7 +75,7 @@ namespace KittyMemory {
 
 
     /*
-     * Wrapper to dereference & read value of a pointer
+     * Wrapper to dereference & set value of a pointer or multi level pointer
      * Make sure to use the correct data type!
      */
     template<typename Type>
@@ -83,33 +83,54 @@ namespace KittyMemory {
         Type defaultVal = {};
         if (ptr == NULL)
             return defaultVal;
-        void *finalPtr = ptr;
-        for (int i = 0; finalPtr != NULL && i < offsets.size(); i++) {
-            finalPtr = reinterpret_cast<void **>(reinterpret_cast<uintptr_t>(finalPtr) + offsets[i]);
-        }
-        if (finalPtr == NULL)
+		
+        uintptr_t finalPtr = reinterpret_cast<uintptr_t>(ptr);
+        int offsetsSize = offsets.size();
+        if(offsetsSize > 0){
+			for (int i = 0; finalPtr != 0 && i < offsetsSize; i++) {
+				if(i == (offsetsSize - 1))
+					return *reinterpret_cast<Type *>(finalPtr + offsets[i]);
+	
+				finalPtr = *reinterpret_cast<uintptr_t *>(finalPtr + offsets[i]);
+			}
+		}
+		
+        if (finalPtr == 0)
             return defaultVal;
+		
         return *reinterpret_cast<Type *>(finalPtr);
     }
 
 
     /*
-     * Wrapper to dereference & set value of a pointer
+     * Wrapper to dereference & set value of a pointer or multi level pointer
      * Make sure to use the correct data type!
      */
     template<typename Type>
-    void writePtr(void *ptr, std::vector<int> offsets, Type val) {
+    bool writePtr(void *ptr, std::vector<int> offsets, Type val) {
         if (ptr == NULL)
-            return;
-        void *finalPtr = ptr;
-        for (int i = 0; finalPtr != NULL && i < offsets.size(); i++) {
-            finalPtr = reinterpret_cast<void **>(reinterpret_cast<uintptr_t>(finalPtr) + offsets[i]);
-        }
-        if (finalPtr) {
-            *reinterpret_cast<Type *>(finalPtr) = val;
-            finalPtr = NULL;
-        }
+            return false;
+		
+        uintptr_t finalPtr = reinterpret_cast<uintptr_t>(ptr);
+        int offsetsSize = offsets.size();
+        if(offsetsSize > 0){
+			for (int i = 0; finalPtr != 0 && i < offsetsSize; i++) {
+				if(i == (offsetsSize - 1)){
+					*reinterpret_cast<Type *>(finalPtr + offsets[i]) = val;
+					return true;
+				}
+	
+				finalPtr = *reinterpret_cast<uintptr_t *>(finalPtr + offsets[i]);
+			}
+		}
+		
+        if (finalPtr == 0)
+            return false;
+		
+        *reinterpret_cast<Type *>(finalPtr) = val;
+		return true;
     }
+	
     /*
      * Gets info of a mapped library in self process
      */
