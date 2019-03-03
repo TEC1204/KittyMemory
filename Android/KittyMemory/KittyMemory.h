@@ -25,9 +25,6 @@
 #define _PROT_RX_  (PROT_READ | PROT_EXEC)
 
 
-#define EMPTY_VEC_OFFSET std::vector<int>()
-
-
 namespace KittyMemory {
 
     typedef enum {
@@ -75,7 +72,7 @@ namespace KittyMemory {
 
 
     /*
-     * Wrapper to dereference & set value of a pointer or multi level pointer
+     * Wrapper to dereference & get value of a pointer or multi level pointer
      * Make sure to use the correct data type!
      */
     template<typename Type>
@@ -83,54 +80,54 @@ namespace KittyMemory {
         Type defaultVal = {};
         if (ptr == NULL)
             return defaultVal;
-		
+
         uintptr_t finalPtr = reinterpret_cast<uintptr_t>(ptr);
         int offsetsSize = offsets.size();
-        if(offsetsSize > 0){
-			for (int i = 0; finalPtr != 0 && i < offsetsSize; i++) {
-				if(i == (offsetsSize - 1))
-					return *reinterpret_cast<Type *>(finalPtr + offsets[i]);
-	
-				finalPtr = *reinterpret_cast<uintptr_t *>(finalPtr + offsets[i]);
-			}
-		}
-		
+        if (offsetsSize > 0) {
+            for (int i = 0; finalPtr != 0 && i < offsetsSize; i++) {
+                if (i == (offsetsSize - 1))
+                    return *reinterpret_cast<Type *>(finalPtr + offsets[i]);
+
+                finalPtr = *reinterpret_cast<uintptr_t *>(finalPtr + offsets[i]);
+            }
+        }
+
         if (finalPtr == 0)
             return defaultVal;
-		
+
         return *reinterpret_cast<Type *>(finalPtr);
     }
 
 
     /*
      * Wrapper to dereference & set value of a pointer or multi level pointer
-     * Make sure to use the correct data type!
+     * Make sure to use the correct data type!, const objects won't work
      */
     template<typename Type>
     bool writePtr(void *ptr, std::vector<int> offsets, Type val) {
         if (ptr == NULL)
             return false;
-		
+
         uintptr_t finalPtr = reinterpret_cast<uintptr_t>(ptr);
         int offsetsSize = offsets.size();
-        if(offsetsSize > 0){
-			for (int i = 0; finalPtr != 0 && i < offsetsSize; i++) {
-				if(i == (offsetsSize - 1)){
-					*reinterpret_cast<Type *>(finalPtr + offsets[i]) = val;
-					return true;
-				}
-	
-				finalPtr = *reinterpret_cast<uintptr_t *>(finalPtr + offsets[i]);
-			}
-		}
-		
+        if (offsetsSize > 0) {
+            for (int i = 0; finalPtr != 0 && i < offsetsSize; i++) {
+                if (i == (offsetsSize - 1)) {
+                    *reinterpret_cast<Type *>(finalPtr + offsets[i]) = val;
+                    return true;
+                }
+
+                finalPtr = *reinterpret_cast<uintptr_t *>(finalPtr + offsets[i]);
+            }
+        }
+
         if (finalPtr == 0)
             return false;
-		
+
         *reinterpret_cast<Type *>(finalPtr) = val;
-		return true;
+        return true;
     }
-	
+
     /*
      * Gets info of a mapped library in self process
      */
