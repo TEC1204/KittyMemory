@@ -25,6 +25,9 @@
 #define _PROT_RX_  (PROT_READ | PROT_EXEC)
 
 
+#define EMPTY_VEC_OFFSET std::vector<int>()
+
+
 namespace KittyMemory {
 
     typedef enum {
@@ -139,7 +142,7 @@ namespace KittyMemory {
         if (ptr == NULL)
             return defaultVal;
 
-        return *reinterpret_cast<Type *>(finalPtr);
+        return *reinterpret_cast<Type *>(ptr);
     }
 	
 	
@@ -152,7 +155,7 @@ namespace KittyMemory {
         if (ptr == NULL)
             return false;
 
-        *reinterpret_cast<Type *>(finalPtr) = val;
+        *reinterpret_cast<Type *>(ptr) = val;
         return true;
     }
 	
