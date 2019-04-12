@@ -61,7 +61,7 @@ Memory_Status KittyMemory::memWrite(void *address, const void *buffer, size_t le
 // pass -DUSE_MSHOOKMEMORY to cpp flags in makefile for this
 #ifdef USE_MSHOOKMEMORY
     MSHookMemory(address, buffer, len);
-	return SUCCESS;
+    return SUCCESS;
 #else
     void * page_start  = reinterpret_cast<void *>(_PAGE_START_OF_(address));
     void * page_offset = reinterpret_cast<void *>(_PAGE_OFFSET_OF_(address));
@@ -181,9 +181,9 @@ KittyMemory::mach_file_info KittyMemory::getMemoryMachInfo(const char *fileName)
 uint64_t KittyMemory::getAbsoluteAddress(const char *fileName, uint64_t address){
 	mach_file_info info;
 	if(fileName != NULL){
-		info = getMemoryMachInfo(fileName);
+	   info = getMemoryMachInfo(fileName);
 	} else {
-		info = getBaseInfo();
+	   info = getBaseInfo();
 	}
     if(info.address == 0)
         return 0;
