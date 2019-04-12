@@ -23,7 +23,9 @@ void *HackThread(void *user_data) {
 	
     if(minimapPatch.Modify()){ // modify and apply patch bytes
         NSLog(@"get_CanShowOnMinimap has been modified successfully");
-	NSLog(@"get_CanShowOnMinimap Current Bytes: %s", minimapPatch.ToHexString().c_str()); // Be aware that bytes will stay same if substrate HookMemory used as it uses some kind of IPC.
+		
+		// Be aware that bytes will stay same after patch if substrate HookMemory used as it uses some kind of IPC.
+	NSLog(@"get_CanShowOnMinimap Current Bytes: %s", minimapPatch.ToHexString().c_str());
     } else {
 	NSLog(@"Failed to patch get_CanShowOnMinimap");
     }
