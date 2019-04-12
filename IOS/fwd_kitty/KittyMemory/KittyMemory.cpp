@@ -25,9 +25,7 @@ bool KittyMemory::ProtectAddr(void *address, size_t length, int protection, bool
 
     uintptr_t pageStart = _PAGE_START_OF_(address);
     uintptr_t pageLen   = _PAGE_LEN_OF_(address, length);
-    return (
-            mprotect(reinterpret_cast<void *>(pageStart), pageLen, protection) != -1
-            );
+    return mprotect(reinterpret_cast<void *>(pageStart), pageLen, protection) != -1;
 }
 
 
@@ -146,8 +144,8 @@ std::string KittyMemory::read2HexStr(const void *addr, size_t len) {
 }
 
 
-KittyMemory::mach_file_info KittyMemory::getBaseInfo(){
-    mach_file_info _info = {
+KittyMemory::memory_file_info KittyMemory::getBaseInfo(){
+    memory_file_info _info = {
         0,
         _dyld_get_image_header(0),
         _dyld_get_image_name(0),
@@ -158,8 +156,8 @@ KittyMemory::mach_file_info KittyMemory::getBaseInfo(){
 
 
 
-KittyMemory::mach_file_info KittyMemory::getMemoryMachInfo(const char *fileName){
-    mach_file_info _info;
+KittyMemory::memory_file_info KittyMemory::getMemoryFileInfo(const char *fileName){
+    memory_file_info _info;
 
     int imageCount = _dyld_image_count();
 
@@ -168,7 +166,7 @@ KittyMemory::mach_file_info KittyMemory::getMemoryMachInfo(const char *fileName)
         const mach_header *header = _dyld_get_image_header(i);
         if(!strstr(name, fileName)) continue;
 
-        mach_file_info new_info = {
+        memory_file_info new_info = {
             i, header, name, _dyld_get_image_vmaddr_slide(i)
         };
 
@@ -179,9 +177,9 @@ KittyMemory::mach_file_info KittyMemory::getMemoryMachInfo(const char *fileName)
 
 
 uint64_t KittyMemory::getAbsoluteAddress(const char *fileName, uint64_t address){
-	mach_file_info info;
+	memory_file_info info;
 	if(fileName != NULL){
-	   info = getMemoryMachInfo(fileName);
+	   info = getMemoryFileInfo(fileName);
 	} else {
 	   info = getBaseInfo();
 	}

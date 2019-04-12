@@ -53,7 +53,7 @@ namespace KittyMemory {
         const mach_header *header;
         const char *name;
         intptr_t address;
-    } mach_file_info;
+    } memory_file_info;
 
 
     /*
@@ -72,11 +72,11 @@ namespace KittyMemory {
     Memory_Status memRead(void *buffer, const void *addr, size_t len);
 
     /*
-     * Wrapper to dereference & get value of a pointer or multi level pointer
+     * Wrapper to dereference & get value of a multi level pointer
      * Make sure to use the correct data type!
      */
     template<typename Type>
-    Type readPtr(void *ptr, std::vector<int> offsets) {
+    Type readMultiPtr(void *ptr, std::vector<int> offsets) {
         Type defaultVal = {};
         if (ptr == NULL)
             return defaultVal;
@@ -100,11 +100,11 @@ namespace KittyMemory {
 
 
     /*
-     * Wrapper to dereference & set value of a pointer or multi level pointer
+     * Wrapper to dereference & set value of a multi level pointer
      * Make sure to use the correct data type!, const objects won't work
      */
     template<typename Type>
-    bool writePtr(void *ptr, std::vector<int> offsets, Type val) {
+    bool writeMultiPtr(void *ptr, std::vector<int> offsets, Type val) {
         if (ptr == NULL)
             return false;
 
@@ -127,6 +127,35 @@ namespace KittyMemory {
         *reinterpret_cast<Type *>(finalPtr) = val;
         return true;
     }
+	
+	
+	/*
+     * Wrapper to dereference & get value of a pointer
+     * Make sure to use the correct data type!
+     */
+    template<typename Type>
+    Type readPtr(void *ptr) {
+        Type defaultVal = {};
+        if (ptr == NULL)
+            return defaultVal;
+
+        return *reinterpret_cast<Type *>(finalPtr);
+    }
+	
+	
+	/*
+     * Wrapper to dereference & set value of a pointer
+     * Make sure to use the correct data type!, const objects won't work
+     */
+    template<typename Type>
+    bool writePtr(void *ptr, Type val) {
+        if (ptr == NULL)
+            return false;
+
+        *reinterpret_cast<Type *>(finalPtr) = val;
+        return true;
+    }
+	
 
     /*
      * Reads an address content and returns hex string
@@ -139,12 +168,12 @@ namespace KittyMemory {
     /*
     * returns base executable info
     */
-    mach_file_info getBaseInfo();
+    memory_file_info getBaseInfo();
 
     /*
     * find in memory file info
     */
-    mach_file_info getMemoryMachInfo(const char *fileName);
+    memory_file_info getMemoryFileInfo(const char *fileName);
 
     /*
     * returns relative address of file in memory, NULL as fileName will return base executable

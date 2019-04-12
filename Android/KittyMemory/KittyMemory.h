@@ -72,11 +72,11 @@ namespace KittyMemory {
 
 
     /*
-     * Wrapper to dereference & get value of a pointer or multi level pointer
+     * Wrapper to dereference & get value of a multi level pointer
      * Make sure to use the correct data type!
      */
     template<typename Type>
-    Type readPtr(void *ptr, std::vector<int> offsets) {
+    Type readMultiPtr(void *ptr, std::vector<int> offsets) {
         Type defaultVal = {};
         if (ptr == NULL)
             return defaultVal;
@@ -100,11 +100,11 @@ namespace KittyMemory {
 
 
     /*
-     * Wrapper to dereference & set value of a pointer or multi level pointer
+     * Wrapper to dereference & set value of a multi level pointer
      * Make sure to use the correct data type!, const objects won't work
      */
     template<typename Type>
-    bool writePtr(void *ptr, std::vector<int> offsets, Type val) {
+    bool writeMultiPtr(void *ptr, std::vector<int> offsets, Type val) {
         if (ptr == NULL)
             return false;
 
@@ -127,7 +127,36 @@ namespace KittyMemory {
         *reinterpret_cast<Type *>(finalPtr) = val;
         return true;
     }
+	
+	
+	/*
+     * Wrapper to dereference & get value of a pointer
+     * Make sure to use the correct data type!
+     */
+    template<typename Type>
+    Type readPtr(void *ptr) {
+        Type defaultVal = {};
+        if (ptr == NULL)
+            return defaultVal;
 
+        return *reinterpret_cast<Type *>(finalPtr);
+    }
+	
+	
+	/*
+     * Wrapper to dereference & set value of a pointer
+     * Make sure to use the correct data type!, const objects won't work
+     */
+    template<typename Type>
+    bool writePtr(void *ptr, Type val) {
+        if (ptr == NULL)
+            return false;
+
+        *reinterpret_cast<Type *>(finalPtr) = val;
+        return true;
+    }
+	
+	
     /*
      * Gets info of a mapped library in self process
      */
