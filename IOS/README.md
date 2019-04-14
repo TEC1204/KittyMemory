@@ -1,2 +1,2 @@
-This is an example theos project, explanation in source files.
+This is an example theos project, explanation in source files.<br/>
 If you are using latest CydiaSubstrate which added MSHookMemory then make sure to pass -DUSE_MSHOOKMEMORY to the cpp flags in your makefile.
