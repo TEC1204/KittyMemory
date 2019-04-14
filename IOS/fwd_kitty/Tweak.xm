@@ -1,5 +1,6 @@
 #import <pthread.h>
 #import "KittyMemory/MemoryPatch.hpp"
+#import "KittyMemory/writeData.hpp"
 
 
 #define ARM64_RET_TRUE "\x20\x00\x80\xD2\xC0\x03\x5F\xD6"
@@ -16,7 +17,7 @@ void *HackThread(void *user_data) {
       NSLog(@"============================================");
 	   	   
     // pass NULL as fileName for base executable
-    minimapPatch = MemoryPatch(NULL, /* relative address */ 0x1016B6914, /* patch bytes */ ARM64_RET_TRUE, /* patch bytes length */ 8);
+    minimapPatch = MemoryPatch(NULL, /* relative address */ 0x1016BB4F4, /* patch bytes */ ARM64_RET_TRUE, /* patch bytes length */ 8);
 	
     // log current bytes
     NSLog(@"get_CanShowOnMinimap Current Bytes: %s", minimapPatch.ToHexString().c_str());
@@ -38,6 +39,23 @@ void *HackThread(void *user_data) {
     } else {
        NSLog(@"Failed to restore get_CanShowOnMinimap");
     }
+	
+	
+	
+	/* writedata alternative, check KittyMemory/writeData.hpp */
+	
+	// write 64 bit integer ( 8 bytes )
+	if(writeData<uint64_t>(0x1016BB4F4, 0x200080D2C0035FD6)){
+	    NSLog(@"get_CanShowOnMinimap has been modified successfully");
+	}
+	
+	
+	// or as 32 bit integer ( 4 bytes )
+	if(writeData<uint32_t>(0x1016BB4F4, 0x200080D2) && writeData<uint32_t>(0x1016BB4F4, 0xC0035FD6)){
+	    NSLog(@"get_CanShowOnMinimap has been modified successfully");
+	}
+	
+	// and same thing for 1 and 2 bytes
 	
     return NULL;
 }
