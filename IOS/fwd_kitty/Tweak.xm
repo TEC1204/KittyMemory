@@ -51,7 +51,7 @@ void *HackThread(void *user_data) {
 	
 	
 	// or as 32 bit integer ( 4 bytes )
-	if(writeData<uint32_t>(0x1016BB4F4, 0x200080D2) && writeData<uint32_t>(0x1016BB4F4, 0xC0035FD6)){
+	if(writeData<uint32_t>(0x1016BB4F4, 0x200080D2) && writeData<uint32_t>(0x1016BB4F4 + 4, 0xC0035FD6)){
 	    NSLog(@"get_CanShowOnMinimap has been modified successfully");
 	}
 	
