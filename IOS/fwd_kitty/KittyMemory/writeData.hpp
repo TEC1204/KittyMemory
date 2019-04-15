@@ -14,7 +14,7 @@
 #ifndef writeData_h
 #define writeData_h
 
-#include "../KittyMemory/MemoryPatch.hpp"
+#include "MemoryPatch.hpp"
 
 
 #define BITS_IN_BYTE 8
@@ -48,24 +48,22 @@ size_t findBytes(T data)
 
 
 template<typename T>
-void SwapData(T &data)
+void SwapData(T& data) 
 {
 	const size_t sz = sizeof(T);
-	switch(sz)
+	switch (sz) 
 	{
-     case sizeof(int8_t): 
-		break;
-     case sizeof(int16_t): 
-		data = _OSSwapInt16(data);
-		break;
-     case sizeof(int32_t): 
-        data = _OSSwapInt32(data);
-		break;
-     case sizeof(int64_t): 
-        data = _OSSwapInt64(data);
-		break;
-	 default:
-		break;
+	   case sizeof(int16_t):
+	       data = _OSSwapInt16(data);
+	       break;
+	   case sizeof(int32_t):
+	       data = _OSSwapInt32(data);
+	       break;
+	   case sizeof(int64_t):
+	       data = _OSSwapInt64(data);
+	       break;
+	   default:
+	       break;
 	}
 }
 
