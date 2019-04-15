@@ -14,7 +14,7 @@
 #ifndef writeData_h
 #define writeData_h
 
-#include "MemoryPatch.hpp"
+#include "../KittyMemory/MemoryPatch.hpp"
 
 
 #define BITS_IN_BYTE 8
@@ -41,7 +41,7 @@ size_t findBytes(T data)
    size_t bits = findBits(data);
    if(bits > 0)
    {
-       return bits / BITS_IN_BYTE;
+	   return bits / BITS_IN_BYTE;
    }
    return 0;
 } 
@@ -50,13 +50,13 @@ size_t findBytes(T data)
 template<typename T>
 void SwapData(T &data)
 {
-  const size_t sz = sizeof(T);
-  switch(sz)
-  {
+	const size_t sz = sizeof(T);
+	switch(sz)
+	{
      case sizeof(int8_t): 
 		break;
      case sizeof(int16_t): 
-	data = _OSSwapInt16(data);
+		data = _OSSwapInt16(data);
 		break;
      case sizeof(int32_t): 
         data = _OSSwapInt32(data);
@@ -66,17 +66,12 @@ void SwapData(T &data)
 		break;
 	 default:
 		break;
-   }
+	}
 }
 
-
-template<typename T>
-bool writeData(uint64_t offset, T data, size_t sz = sizeof(T))
-{
-    SwapData<T>(data);
-	 // pass NULL as fileName for base executable
-    return MemoryPatch(NULL, /* relative address */ offset, /* patch bytes */ &data, /* patch bytes length */ sz).Modify();
-}
-
+bool writeData  (uint64_t offset, uint8_t  data);
+bool writeData16(uint64_t offset, uint16_t data);
+bool writeData32(uint64_t offset, uint32_t data);
+bool writeData64(uint64_t offset, uint64_t data);
 
 #endif /* writeData.h */
