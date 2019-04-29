@@ -12,7 +12,16 @@
 
 using KittyMemory::Memory_Status;
 
-#define BAD_KERN_CALL(call) call != KERN_SUCCESS
+typedef void (*MSHookMemory_t)(void *, const void *, size_t);
+inline bool findMSHookMemory(void *dst, const void *src, size_t len){
+  static void *ret = MSFindSymbol(NULL, "_MSHookMemory");
+  if(ret != NULL){
+    reinterpret_cast<MSHookMemory_t>(ret)(dst, src, len);
+    return true;
+  }
+  return false;
+}
+
 
 extern "C" kern_return_t mach_vm_remap(vm_map_t, mach_vm_address_t *, mach_vm_size_t,
                                   mach_vm_offset_t, int, vm_map_t, mach_vm_address_t,
@@ -33,19 +42,19 @@ kern_return_t KittyMemory::getPageInfo(void *page_start, vm_region_submap_short_
     vm_address_t region  = reinterpret_cast<vm_address_t>(page_start);
     vm_size_t region_len = 0;
     mach_msg_type_number_t info_count = VM_REGION_SUBMAP_SHORT_INFO_COUNT_64;
-    natural_t max_depth  = UINT8_MAX;
+    unsigned int depth = 0;
     return vm_region_recurse_64(mach_task_self(), &region, &region_len,
-                                            &max_depth,
+                                            &depth,
                                             (vm_region_recurse_info_t) outInfo,
                                             &info_count);
 }
 
 
-/* 
-refs to 
+/*
+refs to
 - https://github.com/asLody/whale/blob/master/whale/src/platform/memory.cc
 - CydiaSubstrate
-*/ 
+*/
 Memory_Status KittyMemory::memWrite(void *address, const void *buffer, size_t len) {
 	if (address == NULL)
         return INV_ADDR;
@@ -56,11 +65,10 @@ Memory_Status KittyMemory::memWrite(void *address, const void *buffer, size_t le
     if (len < 1 || len > INT_MAX)
         return INV_LEN;
 
-// pass -DUSE_MSHOOKMEMORY to cpp flags in makefile for this
-#ifdef USE_MSHOOKMEMORY
-    MSHookMemory(address, buffer, len);
-    return SUCCESS;
-#else
+    if(findMSHookMemory(address, buffer, len)){
+       return SUCCESS;
+     }
+
     void * page_start  = reinterpret_cast<void *>(_PAGE_START_OF_(address));
     void * page_offset = reinterpret_cast<void *>(_PAGE_OFFSET_OF_(address));
     size_t page_len    = _PAGE_LEN_OF_(address, len);
@@ -69,7 +77,7 @@ Memory_Status KittyMemory::memWrite(void *address, const void *buffer, size_t le
     if(BAD_KERN_CALL(getPageInfo(page_start, &page_info)))
         return INV_KERN_CALL;
 
-    if(page_info.protection & VM_PROT_WRITE){ 
+    if(page_info.protection & VM_PROT_WRITE){
         if(memcpy(address, buffer, len) != NULL){
            return SUCCESS;
         } else {
@@ -101,7 +109,6 @@ Memory_Status KittyMemory::memWrite(void *address, const void *buffer, size_t le
         return INV_KERN_CALL;
 
     return SUCCESS;
-#endif
 }
 
 

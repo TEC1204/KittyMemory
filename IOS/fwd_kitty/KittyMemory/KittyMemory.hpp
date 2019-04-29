@@ -18,6 +18,7 @@
 #include <libkern/OSCacheControl.h>
 #include <vector>
 
+#define BAD_KERN_CALL(call) call != KERN_SUCCESS
 
 #define _SYS_PAGE_SIZE_ (sysconf(_SC_PAGE_SIZE))
 
@@ -127,8 +128,8 @@ namespace KittyMemory {
         *reinterpret_cast<Type *>(finalPtr) = val;
         return true;
     }
-	
-	
+
+
 	/*
      * Wrapper to dereference & get value of a pointer
      * Make sure to use the correct data type!
@@ -141,8 +142,8 @@ namespace KittyMemory {
 
         return *reinterpret_cast<Type *>(ptr);
     }
-	
-	
+
+
 	/*
      * Wrapper to dereference & set value of a pointer
      * Make sure to use the correct data type!, const objects won't work
@@ -155,13 +156,13 @@ namespace KittyMemory {
         *reinterpret_cast<Type *>(ptr) = val;
         return true;
     }
-	
+
 
     /*
      * Reads an address content and returns hex string
      */
     std::string read2HexStr(const void *address, size_t len);
-	
+
 
     kern_return_t getPageInfo(void *page_start, vm_region_submap_short_info_64 *outInfo);
 
